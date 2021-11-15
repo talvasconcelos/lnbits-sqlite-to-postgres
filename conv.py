@@ -1,3 +1,6 @@
+## Python script to migrate an LNbits SQLite DB to Postgres
+## All credits to @Fritz446 for the awesome work 
+
 ## pip install psycopg2 OR psycopg2-binary
 
 import os
@@ -8,9 +11,9 @@ import psycopg2
 # Change these values as needed
 
 sqfolder = "data/"
-pgdb = "fast"
+pgdb = "lnbits"
 pguser = "postgres"
-pgpswd = "postgres"
+pgpswd = "yourpassword"
 pghost = "localhost"
 pgport = "5432"
 pgschema = ""
