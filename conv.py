@@ -54,6 +54,17 @@ def check_db_versions(sqdb):
     print("Database versions OK, converting")
 
 
+def fix_id(seq, values):
+    postgres = get_postgres_cursor()
+
+    max_id = values[len(values) - 1][0]
+    postgres.execute(f"SELECT setval('{seq}', {max_id});")
+
+    connection = postgres.connection
+    postgres.close()
+    connection.close()
+
+
 def insert_to_pg(query, data):
     if len(data) == 0:
         return
@@ -227,7 +238,9 @@ def migrate_ext(sqlite_db_file, schema):
             INSERT INTO tipjar.TipJars (id, name, wallet, onchain, webhook)
             VALUES (%s, %s, %s, %s, %s);
         """
-        insert_to_pg(q, res.fetchall())
+        jars = res.fetchall()
+        insert_to_pg(q, jars)
+        fix_id("tipjar.tipjars_id_seq", jars)
         # TIPS
         res = sq.execute("SELECT * FROM Tips;")
         q = """
