@@ -6,12 +6,6 @@ To start, please backup up your `./data` folder, or if you haven't set one when 
 
 Move the database files (`*.sqlite3`) to the data folder in the script.
 
-Make the script file executable:
-
-```
-$ chmod u+x migrate_sqlite_postgres.sh
-```
-
 ## Install Postgres
 
 Install postgres if you haven't yet, or follow the instalation guide on the [Postgres Tutorial](https://www.postgresqltutorial.com/install-postgresql-linux/) website.
@@ -43,7 +37,7 @@ Then exit the user with `exit`.
 Now create a database for LNbits. Login to postgres user:
 
 ```
-$ sudo -i -u postgres psql
+$ sudo -i -u postgres
 ```
 
 Create the database:
@@ -64,17 +58,24 @@ LNBITS_DATABASE_URL="postgres://postgres:postgres@localhost/lnbits"
 
 Save and run LNbits to create all the tables on the postgres database.
 
-`./venv/bin/hypercorn -k trio --bind 0.0.0.0:5000 'lnbits.app:create_app()'`
+`./venv/bin/uvicorn lnbits.__main__:app`
 
-After the migration runs `Ctrl + c` to exit. Now you're ready to migrate the data from SQLite to Postgres.
+After the migration runs `Ctrl + c` to exit. Now you're ready to migrate the data from SQLite to Postgres. Edit the `conv.py` file in the script with the relevant data:
+
+```
+... 
+pgdb = "lnbits" # Postgres DB name
+pguser = "postgres" # Postgres user
+pgpswd = "yourpassword" # Postgres password
+...
+```
 
 On the terminal window, on the migration tool folder, with your copied data folder, run:
 
 ```
-$ ./migrate_sqlite_postgres.sh
+$ python conv.py
 ```
 
-Script will promt you for the postgres username, if you haven't change the user just hit enter for the default `postgres` user. Next enter the database name you created above, `lnbits` in this example.
-The migration tool will run, some warnings may appear about type issues with `integer`, `bigint`, etc... don't worry.
-
 Hopefully, everything works and get migrated... Launch LNbits again and check if everything is working properly.
+
+**Huge thanks to [fusion44](https://github.com/fusion44) for the hard work on this script!**
