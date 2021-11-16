@@ -342,6 +342,63 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "satsdice":
+        # SATSDICE PAY
+        res = ("SELECT * FROM satsdice_pay;")
+        q = """
+            INSERT INTO satsdice.satsdice_pay (
+                id,
+                wallet,
+                title,
+                min_bet,
+                max_bet,
+                amount,
+                served_meta,
+                served_pr,
+                multiplier,
+                haircut,
+                chance,
+                base_url,
+                open_time
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # SATSDICE WITHDRAW
+        res = ("SELECT * FROM satsdice_withdraw;")
+        q = """
+            INSERT INTO satsdice.satsdice_withdraw (
+                id,
+                satsdice_pay,
+                value,
+                unique_hash,
+                k1,
+                open_time,
+                used
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # SATSDICE PAYMENT
+        res = ("SELECT * FROM satsdice_payment;")
+        q = """
+            INSERT INTO satsdice.satsdice_payment (
+                payment_hash,
+                satsdice_pay,
+                value,
+                paid,
+                lost
+            )
+            VALUES (%s, %s, %s, %s::boolean, %s::boolean);
+        """
+        insert_to_pg(q, res.fetchall())
+        # SATSDICE HASH CHECK
+        res = sq.execute("SELECT * FROM hash_checkw;")
+        q = """
+            INSERT INTO satsdice.hash_checkw (id, lnurl_id)
+            VALUES (%s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
     else:
         print(f"Not implemented: {schema}")
         sq.close()
