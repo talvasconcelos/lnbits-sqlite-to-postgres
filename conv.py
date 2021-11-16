@@ -446,6 +446,27 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s, %s, %s, to_timestamp(%s));
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "lnurlp":
+        # PAY LINKS
+        res = sq.execute("SELECT * FROM pay_links;")
+        q = """
+            INSERT INTO lnurlp.pay_links (
+                id,
+                wallet,
+                description,
+                min,
+                served_meta,
+                served_pr,
+                webhook_url,
+                success_text,
+                success_url,
+                currency,
+                comment_chars,
+                max
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
     else:
         print(f"Not implemented: {schema}")
         sq.close()
