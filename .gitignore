@@ -1,3 +1,6 @@
 data/*
 *.sqlite3
 *.load
+migrate_db.py
+migrate_sqlite_postgres.sh
+remove_inv.py
