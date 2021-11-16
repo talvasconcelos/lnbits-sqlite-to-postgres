@@ -235,6 +235,45 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s, %s, %s);
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "subdomains":
+        # DOMAIN
+        res = sq.execute("SELECT * FROM domain;")
+        q = """
+            INSERT INTO subdomains.domain (
+                id,
+                wallet,
+                domain,
+                webhook,
+                cf_token,
+                cf_zone_id,
+                description,
+                cost,
+                amountmade,
+                allowed_record_types,
+                time
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
+        """
+        insert_to_pg(q, res.fetchall())
+        # SUBDOMAIN
+        res = sq.execute("SELECT * FROM subdomain;")
+        q = """
+            INSERT INTO subdomains.subdomain (
+                id,
+                domain,
+                email,
+                subdomain,
+                ip,
+                wallet,
+                sats,
+                duration,
+                paid,
+                record_type,
+                time
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::boolen, %s, to_timestamp(%s));
+        """
+        insert_to_pg(q, res.fetchall())
     else:
         print(f"Not implemented: {schema}")
         sq.close()
