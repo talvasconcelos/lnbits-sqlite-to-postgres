@@ -11,9 +11,9 @@ import psycopg2
 # Change these values as needed
 
 sqfolder = "data/"
-pgdb = "lnbits"
+pgdb = "fast"
 pguser = "postgres"
-pgpswd = "yourpassword"
+pgpswd = "postgres"
 pghost = "localhost"
 pgport = "5432"
 pgschema = ""
@@ -137,6 +137,87 @@ def migrate_ext(sqlite_db_file, schema):
             INSERT INTO captcha.captchas(
             id, wallet, url, memo, description, amount, "time", remembers, extras)
             VALUES (%s, %s, %s, %s, %s, %s, to_timestamp(%s), %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+    elif schema == "withdraw":
+        # WITHDRAW LINK
+        res = sq.execute("SELECT * FROM withdraw_link;")
+        q = """
+            INSERT INTO withdraw.withdraw_link (
+                id,
+                wallet,
+                title,
+                min_withdrawable,
+                max_withdrawable,
+                uses,
+                wait_time,
+                is_unique,
+                unique_hash,
+                k1,
+                open_time,
+                used,
+                usescsv
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # WITHDRAW HASH CHECK
+        res = sq.execute("SELECT * FROM hash_check;")
+        q = """
+            INSERT INTO withdraw.hash_check (id, lnurl_id)
+            VALUES (%s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+    elif schema == "watchonly":
+        # WALLETS
+        res = sq.execute("SELECT * FROM wallets;")
+        q = """
+            INSERT INTO watchonly.wallets (
+                id,
+                "user",
+                masterpub,
+                title,
+                address_no,
+                balance
+            )
+            VALUES (%s, %s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # ADDRESSES
+        res = sq.execute("SELECT * FROM addresses;")
+        q = """
+            INSERT INTO watchonly.addresses (id, address, wallet, amount)
+            VALUES (%s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # MEMPOOL
+        res = sq.execute("SELECT * FROM mempool;")
+        q = """
+            INSERT INTO watchonly.mempool ("user", endpoint)
+            VALUES (%s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+    elif schema == "usermanager":
+        # USERS
+        res = sq.execute("SELECT * FROM users;")
+        q = """
+            INSERT INTO usermanager.users (id, name, admin, email, password)
+            VALUES (%s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # WALLETS
+        res = sq.execute("SELECT * FROM wallets;")
+        q = """
+            INSERT INTO usermanager.wallets (id, admin, name, "user", adminkey, inkey)
+            VALUES (%s, %s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+    elif schema == "tpos":
+        # TPOSS
+        res = sq.execute("SELECT * FROM tposs;")
+        q = """
+            INSERT INTO tpos.tposs (id, wallet, name, currency)
+            VALUES (%s, %s, %s, %s);
         """
         insert_to_pg(q, res.fetchall())
     else:
