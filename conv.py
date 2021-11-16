@@ -467,6 +467,41 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "lnticket":
+        # TICKET
+        res = sq.execute("SELECT * FROM ticket;")
+        q = """
+            INSERT INTO lnticket.ticket (
+                id,
+                form,
+                email,
+                ltext,
+                name,
+                wallet,
+                sats,
+                paid,
+                time
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s::boolean, to_timestamp(%s));
+        """
+        insert_to_pg(q, res.fetchall())
+        # FORM
+        res = sq.execute("SELECT * FROM form2;")
+        q = """
+            INSERT INTO lnticket.form2 (
+                id,
+                wallet,
+                name,
+                webhook,
+                description,
+                flatrate,
+                amount,
+                amountmade,
+                time
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
+        """
+        insert_to_pg(q, res.fetchall())
     else:
         print(f"Not implemented: {schema}")
         sq.close()
