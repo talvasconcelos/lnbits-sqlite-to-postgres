@@ -221,7 +221,7 @@ def migrate_ext(sqlite_db_file, schema):
         """
         insert_to_pg(q, res.fetchall())
     elif schema == "tipjar":
-        # Tipjars
+        # TIPJARS
         res = sq.execute("SELECT * FROM TipJars;")
         q = """
             INSERT INTO tipjar.TipJars (id, name, wallet, onchain, webhook)
@@ -272,6 +272,42 @@ def migrate_ext(sqlite_db_file, schema):
                 time
             )
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::boolen, %s, to_timestamp(%s));
+        """
+        insert_to_pg(q, res.fetchall())
+    elif schema == "streamalerts":
+        # SERVICES
+        res = sq.execute("SELECT * FROM Services;")
+        q = """
+            INSERT INTO streamalerts.Services (
+                id,
+                state,
+                twitchuser,
+                client_id,
+                client_secret,
+                wallet,
+                onchain,
+                servicename,
+                authenticated,
+                token
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::boolean, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # DONATIONS
+        res = sq.execute("SELECT * FROM Donations;")
+        q = """
+            INSERT INTO streamalerts.Donations (
+                id,
+                wallet,
+                name,
+                message,
+                cur_code,
+                sats,
+                amount,
+                service,
+                posted,
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::boolean);
         """
         insert_to_pg(q, res.fetchall())
     else:
