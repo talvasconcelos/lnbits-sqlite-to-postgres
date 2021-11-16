@@ -399,6 +399,22 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s);
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "paywall":
+        # PAYWALLS
+        res = sq.execute("SELECT * FROM paywalls;")
+        q = """
+            INSERT INTO paywall.paywalls (
+                id,
+                wallet,
+                url,
+                memo,
+                amount,
+                time,
+                remembers,
+                extra
+            )
+            VALUES (%s, %s, %s, %s, %s, to_timestamp(%s), %s, %s);
+            """
     else:
         print(f"Not implemented: {schema}")
         sq.close()
