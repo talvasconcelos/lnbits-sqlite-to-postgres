@@ -414,7 +414,23 @@ def migrate_ext(sqlite_db_file, schema):
                 extra
             )
             VALUES (%s, %s, %s, %s, %s, to_timestamp(%s), %s, %s);
-            """
+        """
+        insert_to_pg(q, res.fetchall())
+    elif schema == "offlineshop":
+        # SHOPS
+        res = sq.execute("SELECT * FROM shops;")
+        q = """
+            INSERT INTO offlineshop.shops (id, wallet, method, wordlist)
+            VALUES (%s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # ITEMS
+        res = sq.execute("SELECT * FROM items;")
+        q = """
+            INSERT INTO offlineshop.items (shop, id, name, description, image, enabled, price, unit)
+            VALUES (%s, %s, %s, %s, %s, %s::boolean, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
     else:
         print(f"Not implemented: {schema}")
         sq.close()
