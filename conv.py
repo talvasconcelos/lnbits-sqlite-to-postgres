@@ -310,6 +310,14 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::boolean);
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "splitpayments":
+        # TARGETS
+        res = sq.execute("SELECT * FROM targets;")
+        q = """
+            INSERT INTO splitpayments.targets (wallet, source, percent, alias)
+            VALUES (%s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
     else:
         print(f"Not implemented: {schema}")
         sq.close()
