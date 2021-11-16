@@ -220,6 +220,21 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s);
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "tipjar":
+        # Tipjars
+        res = sq.execute("SELECT * FROM TipJars;")
+        q = """
+            INSERT INTO tipjar.TipJars (id, name, wallet, onchain, webhook)
+            VALUES (%s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # TIPS
+        res = sq.execute("SELECT * FROM Tips;")
+        q = """
+            INSERT INTO tipjar.Tips (id, wallet, name, message, sats, tipjar)
+            VALUES (%s, %s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
     else:
         print(f"Not implemented: {schema}")
         sq.close()
