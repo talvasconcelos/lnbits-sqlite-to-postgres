@@ -344,7 +344,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
     elif schema == "satsdice":
         # SATSDICE PAY
-        res = ("SELECT * FROM satsdice_pay;")
+        res = sq.execute("SELECT * FROM satsdice_pay;")
         q = """
             INSERT INTO satsdice.satsdice_pay (
                 id,
@@ -365,7 +365,7 @@ def migrate_ext(sqlite_db_file, schema):
         """
         insert_to_pg(q, res.fetchall())
         # SATSDICE WITHDRAW
-        res = ("SELECT * FROM satsdice_withdraw;")
+        res = sq.execute("SELECT * FROM satsdice_withdraw;")
         q = """
             INSERT INTO satsdice.satsdice_withdraw (
                 id,
@@ -380,7 +380,7 @@ def migrate_ext(sqlite_db_file, schema):
         """
         insert_to_pg(q, res.fetchall())
         # SATSDICE PAYMENT
-        res = ("SELECT * FROM satsdice_payment;")
+        res = sq.execute("SELECT * FROM satsdice_payment;")
         q = """
             INSERT INTO satsdice.satsdice_payment (
                 payment_hash,
