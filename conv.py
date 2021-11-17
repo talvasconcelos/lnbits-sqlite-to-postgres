@@ -153,6 +153,23 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s, %s, %s, to_timestamp(%s), %s, %s);
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "copilot":
+        # OLD COPILOTS
+        res = sq.execute("SELECT * FROM copilots;")
+        q = """
+            INSERT INTO copilot.copilots(
+            id, "user", title, lnurl_toggle, wallet, animation1, animation2, animation3, animation1threshold, animation2threshold, animation3threshold, animation1webhook, animation2webhook, animation3webhook, lnurl_title, show_message, show_ack, show_price, amount_made, fullscreen_cam, iframe_url, "timestamp")
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
+        """
+        insert_to_pg(q, res.fetchall())
+
+        # NEW COPILOTS
+        q = """
+           INSERT INTO copilot.newer_copilots(
+            id, "user", title, lnurl_toggle, wallet, animation1, animation2, animation3, animation1threshold, animation2threshold, animation3threshold, animation1webhook, animation2webhook, animation3webhook, lnurl_title, show_message, show_ack, show_price, amount_made, fullscreen_cam, iframe_url, "timestamp")
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
+        """
+        insert_to_pg(q, res.fetchall())
     elif schema == "events":
         # EVENTS
         res = sq.execute("SELECT * FROM events;")
@@ -170,6 +187,9 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s, %s, %s::boolean, %s::boolean, to_timestamp(%s));
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "example":
+        # Example doesn't have a database at the moment
+        pass
     elif schema == "hivemind":
         # Hivemind doesn't have a database at the moment
         pass
