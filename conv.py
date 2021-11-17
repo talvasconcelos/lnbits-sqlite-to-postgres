@@ -153,6 +153,43 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s, %s, %s, to_timestamp(%s), %s, %s);
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "events":
+        # EVENTS
+        res = sq.execute("SELECT * FROM events;")
+        q = """
+            INSERT INTO events.events(
+	        id, wallet, name, info, closing_date, event_start_date, event_end_date, amount_tickets, price_per_ticket, sold, "time")
+	        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
+        """
+        insert_to_pg(q, res.fetchall())
+        # EVENT TICKETS
+        res = sq.execute("SELECT * FROM ticket;")
+        q = """
+            INSERT INTO events.ticket(
+            id, wallet, event, name, email, registered, paid, "time")
+            VALUES (%s, %s, %s, %s, %s, %s::boolean, %s::boolean, to_timestamp(%s));
+        """
+        insert_to_pg(q, res.fetchall())
+    elif schema == "hivemind":
+        # Hivemind doesn't have a database at the moment
+        pass
+    elif schema == "jukebox":
+        # JUKEBOXES
+        res = sq.execute("SELECT * FROM jukebox;")
+        q = """
+            INSERT INTO jukebox.jukebox(
+            id, "user", title, wallet, inkey, sp_user, sp_secret, sp_access_token, sp_refresh_token, sp_device, sp_playlists, price, profit)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        insert_to_pg(q, res.fetchall())
+        # JUKEBOX PAYMENTS
+        res = sq.execute("SELECT * FROM jukebox_payment;")
+        q = """
+            INSERT INTO jukebox.jukebox_payment(
+            payment_hash, juke_id, song_id, paid)
+            VALUES (%s, %s, %s, %s::boolean);
+        """
+        insert_to_pg(q, res.fetchall())
     elif schema == "withdraw":
         # WITHDRAW LINK
         res = sq.execute("SELECT * FROM withdraw_link;")
@@ -491,6 +528,9 @@ def migrate_ext(sqlite_db_file, schema):
         pay_links = res.fetchall()
         insert_to_pg(q, pay_links)
         fix_id("lnurlp.pay_links_id_seq", pay_links)
+    elif schema == "lndhub":
+        # LndHub doesn't have a database at the moment
+        pass
     elif schema == "lnticket":
         # TICKET
         res = sq.execute("SELECT * FROM ticket;")
