@@ -586,6 +586,52 @@ def migrate_ext(sqlite_db_file, schema):
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
         """
         insert_to_pg(q, res.fetchall())
+    elif schema == "livestream":
+        # LIVESTREAMS
+        res = sq.execute("SELECT * FROM livestreams;")
+        q = """
+            INSERT INTO livestream.livestreams (
+                id,
+                wallet,
+                fee_pct,
+                current_track
+            )
+            VALUES (%s, %s, %s, %s);
+        """
+        livestreams = res.fetchall()
+        insert_to_pg(q, livestreams)
+        fix_id("livestream.livestreams_id_seq", livestreams)
+        # PRODUCERS
+        res = sq.execute("SELECT * FROM producers;")
+        q = """
+            INSERT INTO livestream.producers (
+                livestream,
+                id,
+                "user",
+                wallet,
+                name
+            )
+            VALUES (%s, %s, %s, %s, %s);
+        """
+        producers = res.fetchall()
+        insert_to_pg(q, producers)
+        fix_id("livestream.producers_id_seq", producers)
+        # TRACKS
+        res = sq.execute("SELECT * FROM tracks;")
+        q = """
+            INSERT INTO livestream.tracks (
+                livestream,
+                id,
+                download_url,
+                price_msat,
+                name,
+                producer
+            )
+            VALUES (%s, %s, %s, %s, %s, %s);
+        """
+        tracks = res.fetchall()
+        insert_to_pg(q, tracks)
+        fix_id("livestream.tracks_id_seq", tracks)
     else:
         print(f"Not implemented: {schema}")
         sq.close()
