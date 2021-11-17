@@ -55,6 +55,9 @@ def check_db_versions(sqdb):
 
 
 def fix_id(seq, values):
+    if not values or len(values) == 0:
+        return
+
     postgres = get_postgres_cursor()
 
     max_id = values[len(values) - 1][0]
@@ -238,9 +241,9 @@ def migrate_ext(sqlite_db_file, schema):
             INSERT INTO tipjar.TipJars (id, name, wallet, onchain, webhook)
             VALUES (%s, %s, %s, %s, %s);
         """
-        jars = res.fetchall()
-        insert_to_pg(q, jars)
-        fix_id("tipjar.tipjars_id_seq", jars)
+        pay_links = res.fetchall()
+        insert_to_pg(q, pay_links)
+        fix_id("tipjar.tipjars_id_seq", pay_links)
         # TIPS
         res = sq.execute("SELECT * FROM Tips;")
         q = """
@@ -305,7 +308,9 @@ def migrate_ext(sqlite_db_file, schema):
             )
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::boolean, %s);
         """
-        insert_to_pg(q, res.fetchall())
+        services = res.fetchall()
+        insert_to_pg(q, services)
+        fix_id("streamalerts.services_id_seq", services)
         # DONATIONS
         res = sq.execute("SELECT * FROM Donations;")
         q = """
@@ -436,14 +441,18 @@ def migrate_ext(sqlite_db_file, schema):
             INSERT INTO offlineshop.shops (id, wallet, method, wordlist)
             VALUES (%s, %s, %s, %s);
         """
-        insert_to_pg(q, res.fetchall())
+        shops = res.fetchall()
+        insert_to_pg(q, shops)
+        fix_id("offlineshop.shops_id_seq", shops)
         # ITEMS
         res = sq.execute("SELECT * FROM items;")
         q = """
             INSERT INTO offlineshop.items (shop, id, name, description, image, enabled, price, unit)
             VALUES (%s, %s, %s, %s, %s, %s::boolean, %s, %s);
         """
-        insert_to_pg(q, res.fetchall())
+        items = res.fetchall()
+        insert_to_pg(q, items)
+        fix_id("offlineshop.items_id_seq", items)
     elif schema == "lnurlpos":
         # LNURLPOSS
         res = sq.execute("SELECT * FROM lnurlposs;")
@@ -479,7 +488,9 @@ def migrate_ext(sqlite_db_file, schema):
             )
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-        insert_to_pg(q, res.fetchall())
+        pay_links = res.fetchall()
+        insert_to_pg(q, pay_links)
+        fix_id("lnurlp.pay_links_id_seq", pay_links)
     elif schema == "lnticket":
         # TICKET
         res = sq.execute("SELECT * FROM ticket;")
