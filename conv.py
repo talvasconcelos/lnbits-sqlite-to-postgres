@@ -147,7 +147,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "captcha":
         # CAPTCHA
         res = sq.execute("SELECT * FROM captchas;")
-        q = """
+        q = f"""
             INSERT INTO captcha.captchas(
             id, wallet, url, memo, description, amount, "time", remembers, extras)
             VALUES (%s, %s, %s, %s, %s, %s, to_timestamp(%s), %s, %s);
@@ -156,7 +156,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "copilot":
         # OLD COPILOTS
         res = sq.execute("SELECT * FROM copilots;")
-        q = """
+        q = f"""
             INSERT INTO copilot.copilots(
             id, "user", title, lnurl_toggle, wallet, animation1, animation2, animation3, animation1threshold, animation2threshold, animation3threshold, animation1webhook, animation2webhook, animation3webhook, lnurl_title, show_message, show_ack, show_price, amount_made, fullscreen_cam, iframe_url, "timestamp")
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
@@ -164,7 +164,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
 
         # NEW COPILOTS
-        q = """
+        q = f"""
            INSERT INTO copilot.newer_copilots(
             id, "user", title, lnurl_toggle, wallet, animation1, animation2, animation3, animation1threshold, animation2threshold, animation3threshold, animation1webhook, animation2webhook, animation3webhook, lnurl_title, show_message, show_ack, show_price, amount_made, fullscreen_cam, iframe_url, "timestamp")
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
@@ -173,7 +173,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "events":
         # EVENTS
         res = sq.execute("SELECT * FROM events;")
-        q = """
+        q = f"""
             INSERT INTO events.events(
 	        id, wallet, name, info, closing_date, event_start_date, event_end_date, amount_tickets, price_per_ticket, sold, "time")
 	        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s));
@@ -181,7 +181,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
         # EVENT TICKETS
         res = sq.execute("SELECT * FROM ticket;")
-        q = """
+        q = f"""
             INSERT INTO events.ticket(
             id, wallet, event, name, email, registered, paid, "time")
             VALUES (%s, %s, %s, %s, %s, %s::boolean, %s::boolean, to_timestamp(%s));
@@ -196,7 +196,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "jukebox":
         # JUKEBOXES
         res = sq.execute("SELECT * FROM jukebox;")
-        q = """
+        q = f"""
             INSERT INTO jukebox.jukebox(
             id, "user", title, wallet, inkey, sp_user, sp_secret, sp_access_token, sp_refresh_token, sp_device, sp_playlists, price, profit)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
@@ -204,7 +204,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
         # JUKEBOX PAYMENTS
         res = sq.execute("SELECT * FROM jukebox_payment;")
-        q = """
+        q = f"""
             INSERT INTO jukebox.jukebox_payment(
             payment_hash, juke_id, song_id, paid)
             VALUES (%s, %s, %s, %s::boolean);
@@ -213,7 +213,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "withdraw":
         # WITHDRAW LINK
         res = sq.execute("SELECT * FROM withdraw_link;")
-        q = """
+        q = f"""
             INSERT INTO withdraw.withdraw_link (
                 id,
                 wallet,
@@ -234,7 +234,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
         # WITHDRAW HASH CHECK
         res = sq.execute("SELECT * FROM hash_check;")
-        q = """
+        q = f"""
             INSERT INTO withdraw.hash_check (id, lnurl_id)
             VALUES (%s, %s);
         """
@@ -242,7 +242,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "watchonly":
         # WALLETS
         res = sq.execute("SELECT * FROM wallets;")
-        q = """
+        q = f"""
             INSERT INTO watchonly.wallets (
                 id,
                 "user",
@@ -256,14 +256,14 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
         # ADDRESSES
         res = sq.execute("SELECT * FROM addresses;")
-        q = """
+        q = f"""
             INSERT INTO watchonly.addresses (id, address, wallet, amount)
             VALUES (%s, %s, %s, %s);
         """
         insert_to_pg(q, res.fetchall())
         # MEMPOOL
         res = sq.execute("SELECT * FROM mempool;")
-        q = """
+        q = f"""
             INSERT INTO watchonly.mempool ("user", endpoint)
             VALUES (%s, %s);
         """
@@ -271,14 +271,14 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "usermanager":
         # USERS
         res = sq.execute("SELECT * FROM users;")
-        q = """
+        q = f"""
             INSERT INTO usermanager.users (id, name, admin, email, password)
             VALUES (%s, %s, %s, %s, %s);
         """
         insert_to_pg(q, res.fetchall())
         # WALLETS
         res = sq.execute("SELECT * FROM wallets;")
-        q = """
+        q = f"""
             INSERT INTO usermanager.wallets (id, admin, name, "user", adminkey, inkey)
             VALUES (%s, %s, %s, %s, %s, %s);
         """
@@ -286,7 +286,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "tpos":
         # TPOSS
         res = sq.execute("SELECT * FROM tposs;")
-        q = """
+        q = f"""
             INSERT INTO tpos.tposs (id, wallet, name, currency)
             VALUES (%s, %s, %s, %s);
         """
@@ -294,7 +294,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "tipjar":
         # TIPJARS
         res = sq.execute("SELECT * FROM TipJars;")
-        q = """
+        q = f"""
             INSERT INTO tipjar.TipJars (id, name, wallet, onchain, webhook)
             VALUES (%s, %s, %s, %s, %s);
         """
@@ -303,7 +303,7 @@ def migrate_ext(sqlite_db_file, schema):
         fix_id("tipjar.tipjars_id_seq", pay_links)
         # TIPS
         res = sq.execute("SELECT * FROM Tips;")
-        q = """
+        q = f"""
             INSERT INTO tipjar.Tips (id, wallet, name, message, sats, tipjar)
             VALUES (%s, %s, %s, %s, %s, %s);
         """
@@ -311,7 +311,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "subdomains":
         # DOMAIN
         res = sq.execute("SELECT * FROM domain;")
-        q = """
+        q = f"""
             INSERT INTO subdomains.domain (
                 id,
                 wallet,
@@ -330,7 +330,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
         # SUBDOMAIN
         res = sq.execute("SELECT * FROM subdomain;")
-        q = """
+        q = f"""
             INSERT INTO subdomains.subdomain (
                 id,
                 domain,
@@ -344,13 +344,13 @@ def migrate_ext(sqlite_db_file, schema):
                 record_type,
                 time
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::boolen, %s, to_timestamp(%s));
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::boolean, %s, to_timestamp(%s));
         """
         insert_to_pg(q, res.fetchall())
     elif schema == "streamalerts":
         # SERVICES
         res = sq.execute("SELECT * FROM Services;")
-        q = """
+        q = f"""
             INSERT INTO streamalerts.Services (
                 id,
                 state,
@@ -370,7 +370,7 @@ def migrate_ext(sqlite_db_file, schema):
         fix_id("streamalerts.services_id_seq", services)
         # DONATIONS
         res = sq.execute("SELECT * FROM Donations;")
-        q = """
+        q = f"""
             INSERT INTO streamalerts.Donations (
                 id,
                 wallet,
@@ -388,7 +388,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "splitpayments":
         # TARGETS
         res = sq.execute("SELECT * FROM targets;")
-        q = """
+        q = f"""
             INSERT INTO splitpayments.targets (wallet, source, percent, alias)
             VALUES (%s, %s, %s, %s);
         """
@@ -396,7 +396,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "satspay":
         # CHARGES
         res = sq.execute("SELECT * FROM charges;")
-        q = """
+        q = f"""
             INSERT INTO satspay.charges (
                 id,
                 "user",
@@ -420,7 +420,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "satsdice":
         # SATSDICE PAY
         res = sq.execute("SELECT * FROM satsdice_pay;")
-        q = """
+        q = f"""
             INSERT INTO satsdice.satsdice_pay (
                 id,
                 wallet,
@@ -441,7 +441,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
         # SATSDICE WITHDRAW
         res = sq.execute("SELECT * FROM satsdice_withdraw;")
-        q = """
+        q = f"""
             INSERT INTO satsdice.satsdice_withdraw (
                 id,
                 satsdice_pay,
@@ -456,7 +456,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
         # SATSDICE PAYMENT
         res = sq.execute("SELECT * FROM satsdice_payment;")
-        q = """
+        q = f"""
             INSERT INTO satsdice.satsdice_payment (
                 payment_hash,
                 satsdice_pay,
@@ -469,7 +469,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
         # SATSDICE HASH CHECK
         res = sq.execute("SELECT * FROM hash_checkw;")
-        q = """
+        q = f"""
             INSERT INTO satsdice.hash_checkw (id, lnurl_id)
             VALUES (%s, %s);
         """
@@ -477,8 +477,9 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "paywall":
         # PAYWALLS
         res = sq.execute("SELECT * FROM paywalls;")
-        q = """
-            INSERT INTO paywall.paywalls (
+        print(res.fetchall())
+        q = f"""
+            INSERT INTO paywall.paywalls(
                 id,
                 wallet,
                 url,
@@ -494,7 +495,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "offlineshop":
         # SHOPS
         res = sq.execute("SELECT * FROM shops;")
-        q = """
+        q = f"""
             INSERT INTO offlineshop.shops (id, wallet, method, wordlist)
             VALUES (%s, %s, %s, %s);
         """
@@ -503,7 +504,7 @@ def migrate_ext(sqlite_db_file, schema):
         fix_id("offlineshop.shops_id_seq", shops)
         # ITEMS
         res = sq.execute("SELECT * FROM items;")
-        q = """
+        q = f"""
             INSERT INTO offlineshop.items (shop, id, name, description, image, enabled, price, unit)
             VALUES (%s, %s, %s, %s, %s, %s::boolean, %s, %s);
         """
@@ -513,14 +514,14 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "lnurlpos":
         # LNURLPOSS
         res = sq.execute("SELECT * FROM lnurlposs;")
-        q = """
+        q = f"""
             INSERT INTO lnurlpos.lnurlposs (id, key, title, wallet, currency, timestamp)
             VALUES (%s, %s, %s, %s, %s, to_timestamp(%s));
         """
         insert_to_pg(q, res.fetchall())
         # LNURLPOS PAYMENT
         res = sq.execute("SELECT * FROM lnurlpospayment;")
-        q = """
+        q = f"""
             INSERT INTO lnurlpos.lnurlpospayment (id, posid, payhash, payload, pin, sats, timestamp)
             VALUES (%s, %s, %s, %s, %s, %s, to_timestamp(%s));
         """
@@ -528,7 +529,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "lnurlp":
         # PAY LINKS
         res = sq.execute("SELECT * FROM pay_links;")
-        q = """
+        q = f"""
             INSERT INTO lnurlp.pay_links (
                 id,
                 wallet,
@@ -554,7 +555,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "lnticket":
         # TICKET
         res = sq.execute("SELECT * FROM ticket;")
-        q = """
+        q = f"""
             INSERT INTO lnticket.ticket (
                 id,
                 form,
@@ -571,7 +572,7 @@ def migrate_ext(sqlite_db_file, schema):
         insert_to_pg(q, res.fetchall())
         # FORM
         res = sq.execute("SELECT * FROM form2;")
-        q = """
+        q = f"""
             INSERT INTO lnticket.form2 (
                 id,
                 wallet,
@@ -589,7 +590,7 @@ def migrate_ext(sqlite_db_file, schema):
     elif schema == "livestream":
         # LIVESTREAMS
         res = sq.execute("SELECT * FROM livestreams;")
-        q = """
+        q = f"""
             INSERT INTO livestream.livestreams (
                 id,
                 wallet,
@@ -603,7 +604,7 @@ def migrate_ext(sqlite_db_file, schema):
         fix_id("livestream.livestreams_id_seq", livestreams)
         # PRODUCERS
         res = sq.execute("SELECT * FROM producers;")
-        q = """
+        q = f"""
             INSERT INTO livestream.producers (
                 livestream,
                 id,
@@ -618,7 +619,7 @@ def migrate_ext(sqlite_db_file, schema):
         fix_id("livestream.producers_id_seq", producers)
         # TRACKS
         res = sq.execute("SELECT * FROM tracks;")
-        q = """
+        q = f"""
             INSERT INTO livestream.tracks (
                 livestream,
                 id,
@@ -649,5 +650,7 @@ for file in files:
     path = f"data/{file}"
     if file.startswith("ext_"):
         schema = file.replace("ext_", "").split(".")[0]
+        print(f"Migrating: {schema}")
         migrate_ext(path, schema)
+        print(f"Migrated: {schema}")
 
